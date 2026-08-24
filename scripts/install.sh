@@ -1,0 +1,10 @@
+#!/bin/bash
+# CodeDeploy runs non-interactive shells; ~/.bashrc is not loaded, so nvm's npm is missing from PATH.
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+cd /home/ubuntu/easylink-solar/ad
+if ! npm ci; then
+  echo "npm ci failed; falling back to npm install to resync node_modules"
+  npm install
+fi

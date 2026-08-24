@@ -1,0 +1,29 @@
+version: 0.0
+os: linux
+# Default is DISALLOW — fails if any path under destination already exists (e.g. old .next chunks).
+file_exists_behavior: OVERWRITE
+
+files:
+  - source: /
+    destination: /home/ubuntu/easylink-solar/ad
+
+hooks:
+  ApplicationStop:
+    - location: scripts/application-stop.sh
+      timeout: 120
+      runas: ubuntu
+  BeforeInstall:
+    - location: scripts/before-install.sh
+      timeout: 120
+  AfterInstall:
+    # No runas: runs as root — fix ownership after CodeDeploy copies files as root.
+    - location: scripts/chown-ad.sh
+      timeout: 120
+    - location: scripts/install.sh
+      timeout: 120
+      runas: ubuntu
+
+  ApplicationStart:
+    - location: scripts/start.sh
+      timeout: 600
+      runas: ubuntu
