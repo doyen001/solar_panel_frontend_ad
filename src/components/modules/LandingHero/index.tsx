@@ -23,13 +23,13 @@ export function Header() {
         >
           <Image
             src="/images/logo.webp"
-            alt="EasyLink Solar"
+            alt="Easylink Plus"
             priority
             unoptimized
             width={40}
             height={40}
           />
-          <span>EASYLINK SOLAR</span>
+          <span>Easylink Plus</span>
         </Link>
 
         <nav className="hidden items-center gap-4 text-sm text-slate-800 lg:flex xl:gap-5">
