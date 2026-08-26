@@ -87,9 +87,9 @@ export function Header() {
             >
               Contact Us
             </RainbowButton>
-            <button className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-500 xl:px-5">
+            {/* <button className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-500 xl:px-5">
               Buy Now
-            </button>
+            </button> */}
           </div>
           <p className="hidden text-[11px] font-medium tracking-wide text-slate-800 2xl:block">
             Powered by{" "}

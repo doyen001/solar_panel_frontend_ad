@@ -1,10 +1,10 @@
 /** Landing site header navigation (`LandingHero` / `Header`) */
 export const LANDING_NAV_ITEMS = [
-  { label: "Bluetti", link: "/bluetti" },
-  { label: "Products", link: "/products" },
-  { label: "Customers", link: "/customers" },
-  { label: "Installers", link: "/installers/landing" },
-  { label: "Design Platform", link: "/designs" },
+  // { label: "Bluetti", link: "/bluetti" },
+  // { label: "Products", link: "/products" },
+  // { label: "Customers", link: "/customers" },
+  // { label: "Installers", link: "/installers/landing" },
+  // { label: "Design Platform", link: "/designs" },
   { label: "Services", link: "/services" },
   { label: "About Us", link: "/about-us" },
 ] as const;
