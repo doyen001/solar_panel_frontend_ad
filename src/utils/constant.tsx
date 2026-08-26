@@ -5,7 +5,13 @@ export const LANDING_NAV_ITEMS = [
   // { label: "Customers", link: "/customers" },
   // { label: "Installers", link: "/installers/landing" },
   // { label: "Design Platform", link: "/designs" },
-  { label: "Services", link: "/services" },
+  { label: "Services", link: "/services#services" },
+  { label: "Design", link: "/services#process" },
+  { label: "Development Technology", link: "/services#technology" },
+  { label: "Custom Research", link: "/services#why-us" },
+  { label: "Portfolio", link: "/services#portfolio" },
+  { label: "Client Success", link: "/services#testimonials" },
+  { label: "Pricing", link: "/services#pricing" },
   { label: "About Us", link: "/about-us" },
 ] as const;
 
