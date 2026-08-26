@@ -4244,18 +4244,17 @@ button {
     background: #eef3f5;
   }
 
-  /* Copy in ServicesHeroSection.tsx applies `text-white` / `text-yellow-lemon`
-     directly, so it needs an explicit repaint per stop. Amber/frost also read
-     several utilities (bg-svc-glass, text-svc-dark-body, border-svc-dark-border)
-     from svc-dark-* tokens tuned for a dark background — remap those too.
+  /* .svc-glass (secondary CTA, floating cards) reads these vars directly, so
+     redefining them here is enough to re-tint it for a light background.
      Custom-property resolution follows the DOM tree, not cascade layers, so
      this part is safe inside @layer components: no competing same-property
-     rule to out-rank. */
+     rule to out-rank. NOTE: Tailwind-generated utilities like bg-svc-glass /
+     text-svc-dark-body / border-svc-dark-border do NOT read these vars —
+     Tailwind bakes their resolved color in at build time — so those need the
+     separate unlayered class overrides below instead. */
   [data-hero-bg="amber"],
   [data-hero-bg="frost"] {
-    --color-svc-dark-body: #20242b;
-    --color-svc-dark-muted: rgb(32 36 43 / 0.65);
-    --color-svc-dark-border: rgb(32 36 43 / 0.16);
+    --color-svc-dark-border: rgb(92 58 33 / 0.35);
     --color-svc-glass: rgb(255 255 255 / 0.55);
     --color-svc-glass-strong: rgb(255 255 255 / 0.75);
   }
@@ -4542,6 +4541,62 @@ button {
 [data-hero-bg="amber"] .text-yellow-lemon,
 [data-hero-bg="frost"] .text-yellow-lemon {
   color: #20242b;
+}
+
+/* Badge / breadcrumb / subtitle / trust-note / stat-label text was reading
+   Tailwind's baked-in dark-background values (text-svc-dark-body,
+   text-svc-dark-muted, border-svc-dark-border, bg-svc-glass, text-white/25,
+   hover:text-white) since those utilities inline their color at build time
+   rather than reading a var — see the @layer note above for why this has to
+   be unlayered. Recolored to brown on the yellow/light previews. */
+[data-hero-bg="amber"] .text-svc-dark-body,
+[data-hero-bg="frost"] .text-svc-dark-body {
+  color: #5c3a21;
+}
+
+[data-hero-bg="amber"] .text-svc-dark-muted,
+[data-hero-bg="frost"] .text-svc-dark-muted {
+  color: rgb(92 58 33 / 0.72);
+}
+
+[data-hero-bg="amber"] .border-svc-dark-border,
+[data-hero-bg="frost"] .border-svc-dark-border {
+  border-color: rgb(92 58 33 / 0.35);
+}
+
+[data-hero-bg="amber"] .bg-svc-glass,
+[data-hero-bg="frost"] .bg-svc-glass {
+  background-color: rgb(255 255 255 / 0.5);
+}
+
+[data-hero-bg="amber"] .text-white\/25,
+[data-hero-bg="frost"] .text-white\/25 {
+  color: rgb(92 58 33 / 0.35);
+}
+
+[data-hero-bg="amber"] .hover\:text-white:hover,
+[data-hero-bg="frost"] .hover\:text-white:hover {
+  color: #5c3a21;
+}
+
+/* Get Free Quote CTA (.svc-cta-primary): blue-to-maroon fill on the
+   yellow/light previews only — the default yellow/orange gradient stays on
+   the dark (Midnight) background. Approximated from the reference image;
+   give exact hex values if this needs to match more precisely. */
+[data-hero-bg="amber"] .svc-cta-primary,
+[data-hero-bg="frost"] .svc-cta-primary {
+  background: linear-gradient(
+    155.94deg,
+    var(--color-auth-outline) 16.143%,
+    var(--color-coral) 99.619%
+  );
+  color: #f3f1ea;
+  box-shadow: 0 10px 30px -12px rgb(255 60 60 / 0.55);
+}
+
+[data-hero-bg="amber"] .svc-cta-primary:hover,
+[data-hero-bg="frost"] .svc-cta-primary:hover {
+  box-shadow: 0 16px 38px -14px rgb(255 60 60 / 0.65);
 }
 
 /* Scope smooth scrolling to pages that opt in, rather than the whole app. */

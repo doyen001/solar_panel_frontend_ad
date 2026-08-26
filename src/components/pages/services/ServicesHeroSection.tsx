@@ -1,4 +1,3 @@
-import { ServicesBreadcrumb } from "@/components/pages/services/ServicesBreadcrumb";
 import { ServicesCounter } from "@/components/pages/services/ServicesCounter";
 import { ServicesHeroBackgroundStage } from "@/components/pages/services/ServicesHeroBackgroundStage";
 import { ServicesHeroMockup } from "@/components/pages/services/ServicesHeroMockup";
@@ -19,8 +18,6 @@ export function ServicesHeroSection() {
   return (
     <ServicesHeroBackgroundStage>
       <div className="relative mx-auto w-full max-w-[1226px] px-4 pb-16 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-8 lg:pb-28">
-        <ServicesBreadcrumb />
-
         <div className="mt-8 grid items-center gap-12 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.02fr)] lg:gap-14">
           <div className="flex flex-col gap-7">
             <ServicesReveal className="flex flex-col gap-6">

@@ -66,7 +66,7 @@ export function ServicesHeroBackgroundStage({ children }: Props) {
         role="radiogroup"
         aria-label="Preview hero background"
         onKeyDown={handleKeyDown}
-        className="absolute right-4 top-24 z-20 grid h-14 w-[264px] grid-cols-3 rounded-full border border-white/25 bg-black/25 p-1 backdrop-blur-md sm:right-6 sm:top-28 lg:right-8"
+        className="absolute right-4 bottom-3 z-20 grid h-9 w-[264px] grid-cols-3 rounded-full border border-white/25 bg-black/25 p-1 backdrop-blur-md sm:right-6 sm:bottom-3 lg:right-8"
       >
         <div
           aria-hidden="true"
@@ -89,7 +89,7 @@ export function ServicesHeroBackgroundStage({ children }: Props) {
             aria-label={`Preview on ${stop.label} background`}
             tabIndex={activeIndex === index ? 0 : -1}
             onClick={() => setActiveIndex(index)}
-            className="relative z-10 flex flex-col items-center justify-center gap-1 focus-visible:outline-none"
+            className="relative z-10 flex items-center justify-center gap-1.5 focus-visible:outline-none"
           >
             <span
               aria-hidden="true"
