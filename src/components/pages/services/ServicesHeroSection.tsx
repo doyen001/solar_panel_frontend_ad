@@ -1,5 +1,6 @@
 import { ServicesBreadcrumb } from "@/components/pages/services/ServicesBreadcrumb";
 import { ServicesCounter } from "@/components/pages/services/ServicesCounter";
+import { ServicesHeroBackgroundStage } from "@/components/pages/services/ServicesHeroBackgroundStage";
 import { ServicesHeroMockup } from "@/components/pages/services/ServicesHeroMockup";
 import { ServicesReveal } from "@/components/pages/services/ServicesReveal";
 import { ServicesRippleLink } from "@/components/pages/services/ServicesRippleLink";
@@ -16,12 +17,7 @@ const FLOAT_POSITIONS = [
 
 export function ServicesHeroSection() {
   return (
-    <section
-      aria-labelledby="services-hero-title"
-      className="svc-hero-bg relative overflow-hidden"
-    >
-      <div aria-hidden="true" className="svc-grid-lines absolute inset-0" />
-
+    <ServicesHeroBackgroundStage>
       <div className="relative mx-auto w-full max-w-[1226px] px-4 pb-16 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-8 lg:pb-28">
         <ServicesBreadcrumb />
 
@@ -120,6 +116,6 @@ export function ServicesHeroSection() {
           </ServicesReveal>
         </div>
       </div>
-    </section>
+    </ServicesHeroBackgroundStage>
   );
 }
