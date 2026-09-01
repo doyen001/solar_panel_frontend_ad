@@ -24,7 +24,7 @@ export function HeroFeatureBar({ features, className = "" }: HeroFeatureBarProps
           <div className="about-us-hero-icon-well flex size-[38px] shrink-0 items-center justify-center rounded-lg">
             <Icon
               name={feature.iconId}
-              className="size-[19px] text-slate-ink"
+              className="size-4.75 text-slate-ink"
             />
           </div>
           <div className="min-w-0">
