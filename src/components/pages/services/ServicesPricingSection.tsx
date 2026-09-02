@@ -4,7 +4,7 @@ import { Suspense, useState } from "react";
 import { ServicesReveal } from "@/components/pages/services/ServicesReveal";
 import { ServicesRippleLink } from "@/components/pages/services/ServicesRippleLink";
 import { ServicesSectionHeading } from "@/components/pages/services/ServicesSectionHeading";
-import { CheckoutReturnNotice } from "@/components/pages/services/CheckoutReturnNotice";
+import { PaymentConfirmationDialog } from "@/components/pages/services/PaymentConfirmationDialog";
 import { PricingCheckoutModal } from "@/components/pages/services/PricingCheckoutModal";
 import Icon from "@/components/ui/Icons";
 import type { AdQuoteTierId } from "@/lib/adQuoteCheckout";
@@ -34,7 +34,7 @@ export function ServicesPricingSection() {
       className="svc-anchor border-y border-svc-border-soft bg-white py-16 sm:py-20 lg:py-28"
     >
       <Suspense fallback={null}>
-        <CheckoutReturnNotice />
+        <PaymentConfirmationDialog />
       </Suspense>
       <div className="mx-auto w-full max-w-[1226px] px-4 sm:px-6 lg:px-8">
         <ServicesSectionHeading

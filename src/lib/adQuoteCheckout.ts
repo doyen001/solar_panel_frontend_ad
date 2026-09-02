@@ -25,6 +25,7 @@ export type AdQuotePayment = {
   customerName: string;
   receiptUrl: string | null;
   failureMessage: string | null;
+  paidAt: string | null;
 };
 
 export type AdQuoteCheckoutSession = {
