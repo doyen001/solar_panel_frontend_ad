@@ -644,6 +644,43 @@
   }
 }
 
+/*
+ * Animates a conic gradient's own start angle rather than rotating a
+ * background plane behind a mask. Rotating a plane needs it to be oversized
+ * enough to always cover every point of the ring at every angle, including
+ * the corners of a rounded rect — easy to get subtly wrong, and the failure
+ * mode is a visible unpainted gap, or (on a translucent surface) the whole
+ * rotating plane showing through instead of just a thin ring. Used for any
+ * animated-border ring placed on a translucent/gradient surface, where the
+ * "opaque cutout hides the ring" trick above doesn't apply.
+ */
+@property --rainbow-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes rainbow-angle-spin {
+  to {
+    --rainbow-angle: 360deg;
+  }
+}
+
+/*
+ * Same sweep as rainbow-angle-spin, but starting from the top-left corner
+ * (-45deg) instead of straight up (0deg) — used by the About Us value
+ * cards. -45deg and 315deg are the same visual angle, so the loop restarts
+ * with no visible jump.
+ */
+@keyframes value-card-ring-spin {
+  from {
+    --rainbow-angle: -45deg;
+  }
+  to {
+    --rainbow-angle: 315deg;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
