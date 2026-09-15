@@ -10,6 +10,11 @@ import {
   type AdQuoteTiers,
 } from "@/lib/adQuoteCheckout";
 import { renderGoogleSignInButton } from "@/lib/googleIdentity";
+import {
+  mainSiteAuthUrl,
+  readStoredSsoIdentity,
+  type SsoIdentity,
+} from "@/lib/ssoHandoff";
 
 type Props = {
   tierId: AdQuoteTierId;
@@ -57,6 +62,12 @@ export function PricingCheckoutModal({ tierId, tierName, priceLabel, onClose }: 
   const [submitting, setSubmitting] = useState(false);
   const [method, setMethod] = useState<PayOption>("card");
   const [tiers, setTiers] = useState<AdQuoteTiers | null>(null);
+  // Set once on mount — an existing Easylink customer who just came back
+  // from the main site's login (see ServicesPricingSection). When present,
+  // this replaces the Google button entirely: no need to re-prove identity.
+  const [ssoIdentity] = useState<SsoIdentity | null>(() =>
+    readStoredSsoIdentity(),
+  );
 
   // The Google button's callback is registered once and never re-registered
   // (re-rendering it would flicker and lose the iframe), so it reads the
@@ -90,6 +101,9 @@ export function PricingCheckoutModal({ tierId, tierName, priceLabel, onClose }: 
   }, []);
 
   useEffect(() => {
+    // Already identified via the main site's login — no Google button needed.
+    if (ssoIdentity) return;
+
     const host = buttonHostRef.current;
     if (!host) return;
 
@@ -115,7 +129,29 @@ export function PricingCheckoutModal({ tierId, tierName, priceLabel, onClose }: 
         err instanceof Error ? err.message : "Could not load Google sign-in",
       );
     });
-  }, [tierId]);
+  }, [tierId, ssoIdentity]);
+
+  function continueWithSso(identity: SsoIdentity) {
+    setSubmitting(true);
+    setError(null);
+    void createAdQuoteCheckout({
+      tierId,
+      ssoAccessToken: identity.accessToken,
+      paymentMethod: methodRef.current,
+    })
+      .then((session) => {
+        window.location.assign(session.checkoutUrl);
+      })
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Could not start checkout");
+        setSubmitting(false);
+      });
+  }
+
+  function signInWithEasylinkAccount() {
+    const returnTo = `${window.location.origin}/services#pricing`;
+    window.location.href = mainSiteAuthUrl(returnTo);
+  }
 
   const tier = tiers?.tiers.find((t) => t.id === tierId) ?? null;
   const afterpayAvailable = tier?.afterpayEligible ?? false;
@@ -235,8 +271,9 @@ export function PricingCheckoutModal({ tierId, tierName, priceLabel, onClose }: 
         ) : null}
 
         <p className="mt-4 font-dm-sans text-sm leading-6 text-svc-body">
-          Sign in with Google to confirm who to send the receipt and project
-          updates to, then you&apos;ll go straight to
+          {ssoIdentity
+            ? `Continuing as ${ssoIdentity.name} (${ssoIdentity.email}), then you'll go straight to`
+            : "Sign in with Google to confirm who to send the receipt and project updates to, then you'll go straight to"}
           {method === "afterpay"
             ? " Afterpay to approve your four instalments."
             : " Stripe's secure checkout to pay."}
@@ -249,7 +286,28 @@ export function PricingCheckoutModal({ tierId, tierName, priceLabel, onClose }: 
         ) : null}
 
         <div className="mt-5 flex flex-col items-center gap-3">
-          <div ref={buttonHostRef} />
+          {ssoIdentity ? (
+            <button
+              type="button"
+              disabled={submitting}
+              onClick={() => continueWithSso(ssoIdentity)}
+              className="svc-cta-primary inline-flex h-12 w-full items-center justify-center rounded-xl px-6 font-outfit text-base font-semibold text-warm-black disabled:opacity-60"
+            >
+              Continue as {ssoIdentity.name}
+            </button>
+          ) : (
+            <>
+              <div ref={buttonHostRef} />
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={signInWithEasylinkAccount}
+                className="font-dm-sans text-sm font-medium text-svc-accent-text underline underline-offset-2 hover:text-svc-accent disabled:opacity-60"
+              >
+                Already have an Easylink account? Sign in instead
+              </button>
+            </>
+          )}
           {submitting ? (
             <p className="font-dm-sans text-sm text-svc-muted">
               {method === "afterpay"

@@ -6,6 +6,7 @@ import { ServicesRippleLink } from "@/components/pages/services/ServicesRippleLi
 import { ServicesSectionHeading } from "@/components/pages/services/ServicesSectionHeading";
 import { PaymentConfirmationDialog } from "@/components/pages/services/PaymentConfirmationDialog";
 import { PricingCheckoutModal } from "@/components/pages/services/PricingCheckoutModal";
+import { SsoCodeHandler } from "@/components/pages/services/SsoCodeHandler";
 import Icon from "@/components/ui/Icons";
 import type { AdQuoteTierId } from "@/lib/adQuoteCheckout";
 import { SERVICES_PAGE } from "@/utils/constant";
@@ -35,6 +36,9 @@ export function ServicesPricingSection() {
     >
       <Suspense fallback={null}>
         <PaymentConfirmationDialog />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SsoCodeHandler />
       </Suspense>
       <div className="mx-auto w-full max-w-[1226px] px-4 sm:px-6 lg:px-8">
         <ServicesSectionHeading

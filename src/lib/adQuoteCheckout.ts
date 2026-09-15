@@ -89,12 +89,25 @@ export async function fetchAdQuoteTiers(): Promise<AdQuoteTiers> {
   return readEnvelope<AdQuoteTiers>(res, "Could not load payment options");
 }
 
-/** Starts a Stripe Checkout for one of the fixed-price website packages. */
-export async function createAdQuoteCheckout(input: {
-  tierId: AdQuoteTierId;
-  googleIdToken: string;
-  paymentMethod?: AdQuotePaymentMethod;
-}): Promise<AdQuoteCheckoutSession> {
+/**
+ * Starts a Stripe Checkout for one of the fixed-price website packages.
+ * Identity comes from exactly one of: a fresh Google sign-in (`googleIdToken`),
+ * or a one-time code exchanged for an Easylink account session
+ * (`ssoAccessToken`) — see `src/lib/ssoHandoff.ts`.
+ */
+export async function createAdQuoteCheckout(
+  input:
+    | {
+        tierId: AdQuoteTierId;
+        googleIdToken: string;
+        paymentMethod?: AdQuotePaymentMethod;
+      }
+    | {
+        tierId: AdQuoteTierId;
+        ssoAccessToken: string;
+        paymentMethod?: AdQuotePaymentMethod;
+      },
+): Promise<AdQuoteCheckoutSession> {
   const res = await fetch(`${backendBaseUrl()}/payments/ad-quote/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
