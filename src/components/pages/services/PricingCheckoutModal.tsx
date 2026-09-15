@@ -9,7 +9,6 @@ import {
   type AdQuoteTierId,
   type AdQuoteTiers,
 } from "@/lib/adQuoteCheckout";
-import { renderGoogleSignInButton } from "@/lib/googleIdentity";
 import {
   mainSiteAuthUrl,
   readStoredSsoIdentity,
@@ -47,24 +46,23 @@ function formatMoney(amount: number, currency: string): string {
 }
 
 /**
- * "Sign in with Google, then straight to Stripe" — no account, no password.
- * The Google button itself hands us a signed ID token; we send that straight
- * to the backend, which verifies it and creates the Checkout session.
+ * "Sign in with your Easylink account, then straight to Stripe." Identity is
+ * proven via the main site's login (see ssoHandoff.ts) — an existing
+ * customer coming back from that redirect already has a stored identity by
+ * the time this opens; anyone else is sent there by `signInWithEasylinkAccount`.
  *
- * Afterpay runs through the same Stripe Checkout, so the flow is unchanged —
- * the chosen method only decides which payment screen Stripe opens on. It is
- * offered only for packages inside Afterpay's order-value limits, which the
- * backend reports (this site holds price *labels*, not the real amounts).
+ * Afterpay runs through the same Stripe Checkout, so the chosen method only
+ * decides which payment screen Stripe opens on. It is offered only for
+ * packages inside Afterpay's order-value limits, which the backend reports
+ * (this site holds price *labels*, not the real amounts).
  */
 export function PricingCheckoutModal({ tierId, tierName, priceLabel, onClose }: Props) {
-  const buttonHostRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [method, setMethod] = useState<PayOption>("card");
   const [tiers, setTiers] = useState<AdQuoteTiers | null>(null);
   // Set once on mount — an existing Easylink customer who just came back
-  // from the main site's login (see ServicesPricingSection). When present,
-  // this replaces the Google button entirely: no need to re-prove identity.
+  // from the main site's login (see ServicesPricingSection).
   const [ssoIdentity] = useState<SsoIdentity | null>(() =>
     readStoredSsoIdentity(),
   );
@@ -99,37 +97,6 @@ export function PricingCheckoutModal({ tierId, tierName, priceLabel, onClose }: 
       active = false;
     };
   }, []);
-
-  useEffect(() => {
-    // Already identified via the main site's login — no Google button needed.
-    if (ssoIdentity) return;
-
-    const host = buttonHostRef.current;
-    if (!host) return;
-
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
-
-    void renderGoogleSignInButton(host, clientId, (idToken) => {
-      setSubmitting(true);
-      setError(null);
-      void createAdQuoteCheckout({
-        tierId,
-        googleIdToken: idToken,
-        paymentMethod: methodRef.current,
-      })
-        .then((session) => {
-          window.location.assign(session.checkoutUrl);
-        })
-        .catch((err: unknown) => {
-          setError(err instanceof Error ? err.message : "Could not start checkout");
-          setSubmitting(false);
-        });
-    }).catch((err: unknown) => {
-      setError(
-        err instanceof Error ? err.message : "Could not load Google sign-in",
-      );
-    });
-  }, [tierId, ssoIdentity]);
 
   function continueWithSso(identity: SsoIdentity) {
     setSubmitting(true);
@@ -273,7 +240,7 @@ export function PricingCheckoutModal({ tierId, tierName, priceLabel, onClose }: 
         <p className="mt-4 font-dm-sans text-sm leading-6 text-svc-body">
           {ssoIdentity
             ? `Continuing as ${ssoIdentity.name} (${ssoIdentity.email}), then you'll go straight to`
-            : "Sign in with Google to confirm who to send the receipt and project updates to, then you'll go straight to"}
+            : "Sign in with your Easylink account to confirm who to send the receipt and project updates to, then you'll go straight to"}
           {method === "afterpay"
             ? " Afterpay to approve your four instalments."
             : " Stripe's secure checkout to pay."}
@@ -296,17 +263,14 @@ export function PricingCheckoutModal({ tierId, tierName, priceLabel, onClose }: 
               Continue as {ssoIdentity.name}
             </button>
           ) : (
-            <>
-              <div ref={buttonHostRef} />
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={signInWithEasylinkAccount}
-                className="font-dm-sans text-sm font-medium text-svc-accent-text underline underline-offset-2 hover:text-svc-accent disabled:opacity-60"
-              >
-                Already have an Easylink account? Sign in instead
-              </button>
-            </>
+            <button
+              type="button"
+              disabled={submitting}
+              onClick={signInWithEasylinkAccount}
+              className="svc-cta-primary inline-flex h-12 w-full items-center justify-center rounded-xl px-6 font-outfit text-base font-semibold text-warm-black disabled:opacity-60"
+            >
+              Sign in with Easylink
+            </button>
           )}
           {submitting ? (
             <p className="font-dm-sans text-sm text-svc-muted">
