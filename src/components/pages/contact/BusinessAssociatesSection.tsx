@@ -6,21 +6,12 @@ import logoIcon from "@/components/ui/Icons/bluettiLogo.svg";
  * then this is a placeholder set the client asked us to seed and revise later.
  */
 const TECH_PARTNER_NAMES = [
-  "Google",
-  "Microsoft",
-  "Amazon Web Services",
-  "Meta",
-  "Apple",
-  "NVIDIA",
-  "OpenAI",
-  "Anthropic",
-  "Claude",
-  "Salesforce",
-  "Oracle",
-  "Cursor",
-  "Intel",
-  "Qualcomm",
-  "Tesla",
+  "Origin Energy",
+  "1KOMMA5°",
+  "iStore",
+  "PowerBay",
+  "SolarQuotes",
+  "NVIDIA", 
 ] as const;
 
 export function BusinessAssociatesSection() {
@@ -38,9 +29,9 @@ export function BusinessAssociatesSection() {
           <div className="relative z-10 grid min-h-[414px] max-w-7xl mx-auto items-center gap-10 py-7 md:grid-cols-[1.1fr_1.9fr]">
             <div>
               <p className="text-base text-cyan-300">Business Associates</p>
-              <div className="mt-8 inline-flex items-centerpy-2 text-xl font-semibold tracking-[0.25em] text-slate-200">
+              {/* <div className="mt-8 inline-flex items-centerpy-2 text-xl font-semibold tracking-[0.25em] text-slate-200">
                 <Image src={logoIcon} alt="Logo" width={260} height={62} />
-              </div>
+              </div> */}
             </div>
             <div
               className="max-w-[828px] overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]"
