@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
+import { submitContactForm } from "@/lib/contactForm";
 
 const contactItems = [
   { label: "Mobile", value: "04 818 575 08" },
@@ -7,7 +11,75 @@ const contactItems = [
   { label: "Website", value: "www.easylinksolar.com.au" },
 ];
 
+type ContactFormState = {
+  firstName: string;
+  lastName: string;
+  mobile: string;
+  email: string;
+  address: string;
+  message: string;
+};
+
+const EMPTY_FORM: ContactFormState = {
+  firstName: "",
+  lastName: "",
+  mobile: "",
+  email: "",
+  address: "",
+  message: "",
+};
+
+type SubmitResult = { kind: "success" | "error"; message: string };
+
 export function SendUsAndPartnerSection() {
+  const [form, setForm] = useState<ContactFormState>(EMPTY_FORM);
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState<SubmitResult | null>(null);
+
+  function updateField(field: keyof ContactFormState) {
+    return (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
+      setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    };
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (submitting) return;
+
+    if (
+      !form.firstName.trim() ||
+      !form.lastName.trim() ||
+      !form.email.trim() ||
+      !form.message.trim()
+    ) {
+      setResult({
+        kind: "error",
+        message: "Please fill in your name, email, and message.",
+      });
+      return;
+    }
+
+    setSubmitting(true);
+    setResult(null);
+    try {
+      const message = await submitContactForm(form);
+      setResult({ kind: "success", message });
+      setForm(EMPTY_FORM);
+    } catch (err) {
+      setResult({
+        kind: "error",
+        message:
+          err instanceof Error
+            ? err.message
+            : "Unable to reach the contact service. Please try again.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <section className="relative mx-auto mt-[-120px] w-full max-w-7xl px-4 sm:px-6">
       <div className="overflow-hidden rounded-3xl border border-cyan-200/20 shadow-[0_20px_60px_rgba(2,8,23,0.4)]">
@@ -29,7 +101,10 @@ export function SendUsAndPartnerSection() {
                 Fill out the form below and we&apos;ll get back to you shortly.
               </p>
 
-              <form className="mt-8 grid gap-4 sm:grid-cols-2">
+              <form
+                className="mt-8 grid gap-4 sm:grid-cols-2"
+                onSubmit={handleSubmit}
+              >
                 <label className="grid gap-2">
                   <span className="text-xs font-semibold uppercase tracking-wide text-slate-200">
                     First Name
@@ -37,6 +112,10 @@ export function SendUsAndPartnerSection() {
                   <input
                     className="contact-input"
                     placeholder="Enter your first name"
+                    value={form.firstName}
+                    onChange={updateField("firstName")}
+                    disabled={submitting}
+                    required
                   />
                 </label>
                 <label className="grid gap-2">
@@ -46,6 +125,10 @@ export function SendUsAndPartnerSection() {
                   <input
                     className="contact-input"
                     placeholder="Enter your last name"
+                    value={form.lastName}
+                    onChange={updateField("lastName")}
+                    disabled={submitting}
+                    required
                   />
                 </label>
                 <label className="grid gap-2">
@@ -55,6 +138,10 @@ export function SendUsAndPartnerSection() {
                   <input
                     className="contact-input"
                     placeholder="Enter your mobile number"
+                    type="tel"
+                    value={form.mobile}
+                    onChange={updateField("mobile")}
+                    disabled={submitting}
                   />
                 </label>
                 <label className="grid gap-2">
@@ -64,6 +151,11 @@ export function SendUsAndPartnerSection() {
                   <input
                     className="contact-input"
                     placeholder="Enter your email"
+                    type="email"
+                    value={form.email}
+                    onChange={updateField("email")}
+                    disabled={submitting}
+                    required
                   />
                 </label>
                 <label className="grid gap-2 sm:col-span-2">
@@ -73,11 +165,43 @@ export function SendUsAndPartnerSection() {
                   <input
                     className="contact-input"
                     placeholder="Enter your address"
+                    value={form.address}
+                    onChange={updateField("address")}
+                    disabled={submitting}
                   />
                 </label>
+                <label className="grid gap-2 sm:col-span-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-200">
+                    Message
+                  </span>
+                  <textarea
+                    className="contact-input min-h-[120px] resize-none"
+                    placeholder="How can we help?"
+                    value={form.message}
+                    onChange={updateField("message")}
+                    disabled={submitting}
+                    required
+                  />
+                </label>
+                {result ? (
+                  <p
+                    role="status"
+                    className={`sm:col-span-2 rounded-lg border px-3 py-2 text-sm ${
+                      result.kind === "success"
+                        ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
+                        : "border-red-400/30 bg-red-400/10 text-red-200"
+                    }`}
+                  >
+                    {result.message}
+                  </p>
+                ) : null}
                 <div className="pt-2 sm:col-span-2">
-                  <button className="rounded-xl bg-cyan-400 px-8 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-300">
-                    SUBMIT REQUEST
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="rounded-xl bg-cyan-400 px-8 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {submitting ? "SENDING..." : "SUBMIT REQUEST"}
                   </button>
                 </div>
               </form>
